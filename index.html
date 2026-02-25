@@ -4,164 +4,64 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Evaluación Técnica de Expediente</title>
-
   <style>
-    :root{
-      --bg:#071a3a;
-      --card:rgba(255,255,255,.06);
-      --text:#ffffff;
-      --muted:rgba(255,255,255,.75);
-      --gold:#c7a86d;
-      --gold2:#b89456;
-    }
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: radial-gradient(1200px 700px at 30% 20%, rgba(255,255,255,.06), transparent 60%),
-                  radial-gradient(900px 600px at 80% 10%, rgba(199,168,109,.08), transparent 55%),
-                  var(--bg);
-      color:var(--text);
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:24px;
-    }
-    .wrap{
-      width:min(920px, 100%);
-      text-align:center;
-      padding:34px 22px;
-      background: rgba(0,0,0,.18);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 18px;
-      box-shadow: 0 18px 60px rgba(0,0,0,.35);
-    }
-    h1{
-      margin:0 0 10px 0;
-      font-size: clamp(28px, 3.6vw, 44px);
-      letter-spacing:.2px;
-    }
-    .sub{
-      margin:0;
-      font-size: clamp(16px, 2.1vw, 20px);
-      color:var(--muted);
-    }
-    .status{
-      margin:22px auto 10px auto;
-      padding:12px 14px;
-      width: min(520px, 100%);
-      border-radius: 12px;
-      background: var(--card);
-      border: 1px solid rgba(255,255,255,.08);
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.35;
-    }
-    .btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      margin-top:14px;
-      padding:14px 22px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.18);
-      background: linear-gradient(180deg, var(--gold), var(--gold2));
-      color:#1a1a1a;
-      font-weight: 700;
-      text-decoration:none;
-      cursor:pointer;
-      min-width: 190px;
-      box-shadow: 0 12px 28px rgba(0,0,0,.25);
-    }
-    .btn:active{ transform: translateY(1px); }
-    .small{
-      margin-top: 22px;
-      font-size: 13px;
-      color: rgba(255,255,255,.6);
-    }
-    .hidden{ display:none !important; }
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#071b3a;color:#fff;display:flex;min-height:100vh;align-items:center;justify-content:center;padding:24px}
+    .card{max-width:720px;width:100%;text-align:center}
+    h1{font-size:44px;line-height:1.05;margin:0 0 10px}
+    .sub{opacity:.9;margin:0 0 18px;font-size:18px}
+    .status{margin:18px 0 18px;font-weight:600}
+    .btn{display:inline-block;background:#c7a86d;color:#111;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:700}
+    .muted{opacity:.75;margin-top:14px}
+    .footer{opacity:.75;margin-top:26px}
   </style>
 </head>
-
 <body>
-  <div class="wrap">
+  <div class="card">
     <h1>Evaluación Técnica de Expediente</h1>
-    <p class="sub">Regularización en España · Análisis profesional de tu caso migratorio por €89.</p>
+    <p class="sub">Regularización en España<br/>Análisis profesional de tu caso migratorio por €89.</p>
 
-    <div id="statusBox" class="status">
-      Cargando disponibilidad…
-    </div>
+    <div id="statusText" class="status">Cargando disponibilidad...</div>
 
-    <a id="ctaBtn" class="btn hidden" href="#" target="_blank" rel="noopener">
-      Reservar
-    </a>
+    <a id="ctaBtn" class="btn" href="#" target="_blank" rel="noopener">Cargando…</a>
 
-    <div class="small">Clarity Travel &amp; Visa ©️ 2026</div>
+    <div class="footer">Clarity Travel & Visa ©️ 2026</div>
   </div>
 
-  <script>
-    // ✅ Pega aquí tu URL /exec (la del Apps Script publicado)
-    const ENDPOINT = "https://script.google.com/macros/s/AKfycbw6iKJzPhIz9kyibIbtlE2HpZ-QKbEzeex-ayHcEc0PKt4UajJPbwnuVpUxi5xbCbIc/exec";
+<script>
+  // ✅ Pega aquí tu /exec NUEVA (la copiada del Deploy)
+  const EXEC_URL = "https://script.google.com/macros/s/AKfycbyIn8uSGE1Ghr3As5zEhGxDkjvWILo_mFOk0dveXSZsI6ObUPFiDYgY9IPomvl09Dil/exec";
 
-    // --- Render UI con la data del endpoint ---
-    function handleLandingStatus(data){
-      const statusBox = document.getElementById("statusBox");
-      const btn = document.getElementById("ctaBtn");
+  function handleLandingStatus(data){
+    const statusEl = document.getElementById("statusText");
+    const btn = document.getElementById("ctaBtn");
 
-      // Validación mínima
-      if(!data || typeof data.open !== "boolean"){
-        statusBox.textContent = "No se pudo cargar disponibilidad.";
-        btn.classList.remove("hidden");
-        btn.textContent = "Reintentar";
-        btn.href = window.location.href;
-        return;
-      }
-
-      // Texto de status
-      const cupos = (typeof data.cuposOcupados === "number" && typeof data.cuposMax === "number")
-        ? ` (${data.cuposOcupados}/${data.cuposMax})`
-        : "";
-
-      statusBox.textContent = (data.statusText || "Estado") + cupos;
-
-      // Acción del botón según open
-      const url = data.open ? data.calendarUrl : data.waitlistUrl;
-
-      btn.classList.remove("hidden");
-      btn.textContent = data.ctaText || (data.open ? "Reservar" : "Lista de espera");
-
-      if(url && typeof url === "string" && url.startsWith("http")){
-        btn.href = url;
-      } else {
-        // Si no viene url, mostramos reintento
-        btn.textContent = "Reintentar";
-        btn.href = window.location.href;
-      }
+    if(!data){
+      statusEl.textContent = "No se pudo cargar disponibilidad.";
+      btn.textContent = "Reintentar";
+      btn.href = location.href;
+      return;
     }
 
-    // --- JSONP loader (sin CORS) ---
-    function loadStatus(){
-      // Limpia script anterior si existe
-      const old = document.getElementById("jsonpScript");
-      if(old) old.remove();
+    statusEl.textContent = data.statusText || "Estado no disponible";
 
-      const s = document.createElement("script");
-      s.id = "jsonpScript";
-      s.src = ENDPOINT + (ENDPOINT.includes("?") ? "&" : "?") + "callback=handleLandingStatus";
+    const open = !!data.open;
+    btn.textContent = data.ctaText || (open ? "Reservar" : "Lista de espera");
 
-      s.onerror = () => {
-        const statusBox = document.getElementById("statusBox");
-        const btn = document.getElementById("ctaBtn");
-        statusBox.textContent = "No se pudo cargar disponibilidad.";
-        btn.classList.remove("hidden");
-        btn.textContent = "Reintentar";
-        btn.href = window.location.href;
-      };
+    const url = open ? data.calendarUrl : data.waitlistUrl;
+    btn.href = url || "#";
+  }
 
-      document.body.appendChild(s);
-    }
+  function loadStatus(){
+    // JSONP para evitar CORS: inyecta <script src="...&callback=handleLandingStatus">
+    const s = document.createElement("script");
+    s.src = EXEC_URL + "?callback=handleLandingStatus&_=" + Date.now();
+    s.onerror = function(){
+      handleLandingStatus(null);
+    };
+    document.body.appendChild(s);
+  }
 
-    loadStatus();
-  </script>
+  loadStatus();
+</script>
 </body>
 </html>
