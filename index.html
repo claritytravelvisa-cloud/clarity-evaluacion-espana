@@ -3,13 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy"
-      content="default-src 'self';
-               script-src 'self' 'unsafe-inline' https://script.google.com https://*.googleusercontent.com;
-               connect-src 'self' https://script.google.com https://*.googleusercontent.com;
-               img-src 'self' data: https:;
-               style-src 'self' 'unsafe-inline';
-               frame-src https://docs.google.com https://calendar.app.google;">
   <title>Evaluación Técnica España</title>
 
   <style>
@@ -21,21 +14,24 @@
       padding:0;
       text-align:center;
     }
+
     .container{
       padding:60px 20px;
       max-width:800px;
       margin:auto;
     }
-    h1{ font-size:38px; margin-bottom:20px; }
-    p{ font-size:18px; line-height:1.6; margin-bottom:20px; }
-    .status{
-      display:inline-block;
-      padding:10px 16px;
-      border-radius:999px;
-      background: rgba(255,255,255,0.12);
+
+    h1{
+      font-size:38px;
       margin-bottom:20px;
-      font-weight:bold;
     }
+
+    p{
+      font-size:18px;
+      line-height:1.6;
+      margin-bottom:20px;
+    }
+
     .button{
       background:#C7A86D;
       color:#0A1F44;
@@ -44,12 +40,19 @@
       font-weight:bold;
       border-radius:8px;
       display:inline-block;
-      cursor:pointer;
       border:none;
-      font-size:16px;
+      cursor:pointer;
     }
-    .button:hover{ opacity:0.9; }
-    .footer{ margin-top:60px; font-size:14px; opacity:0.7; }
+
+    .button:hover{
+      opacity:0.9;
+    }
+
+    .footer{
+      margin-top:60px;
+      font-size:14px;
+      opacity:0.7;
+    }
   </style>
 </head>
 
@@ -62,9 +65,10 @@
       Análisis profesional de tu caso migratorio por €89.
     </p>
 
-    <div id="statusText" class="status">Cargando disponibilidad...</div>
-    <br><br>
+    <!-- ✅ ESTADO (CUPOS DISPONIBLES / CUPOS LLENOS) -->
+    <p id="statusText">Cargando disponibilidad...</p>
 
+    <!-- ✅ BOTÓN -->
     <button id="ctaBtn" class="button" type="button" disabled>...</button>
 
     <div class="footer">
@@ -72,60 +76,49 @@
     </div>
   </div>
 
+  <!-- ✅ SCRIPT (JSONP) -->
   <script>
-    // ✅ TU ENDPOINT (JSONP)
-    var ENDPOINT = "https://script.google.com/macros/s/AKfycbx9QoPUGpaumgvH-ssHA8mnDsu6hCYte-k67Nl41Vz7l8qi8dXYlvpUECwJyw-Pocs3/exec?callback=handleLandingStatus";
+    const ENDPOINT = "https://script.google.com/macros/s/AKfycbydBLCNSfthkb0dq8oFx1FtIZd5uzVCmn3qIJTl15gc7jIGNmxA6LyCpPajMoX_HQty/exec";
 
-    // Fallbacks por si el endpoint viene incompleto
-    var FALLBACK_CALENDAR = "https://calendar.app.google/fVqD1Lx4WBnz4b7AA";
-    var FALLBACK_WAITLIST = "https://docs.google.com/forms/d/e/1FAIpQLScCFtPDUncoHINpTFGuSnVwbdugP0QrEKG6D5PdgYEaNAzC5g/viewform?usp=header";
+    function applyStatus(data){
+      // texto
+      document.getElementById("statusText").textContent = data.statusText || "";
 
-    function handleLandingStatus(data){
-      var statusEl = document.getElementById("statusText");
-      var btn = document.getElementById("ctaBtn");
-
-      var open = !!(data && data.open);
-      var ctaText = (data && data.ctaText) ? data.ctaText : (open ? "Reservar" : "Lista de espera");
-      var statusText = (data && data.statusText) ? data.statusText : (open ? "Cupos disponibles" : "Cupos llenos");
-
-      var calendarUrl = (data && data.calendarUrl) ? data.calendarUrl : FALLBACK_CALENDAR;
-      var waitlistUrl = (data && data.waitlistUrl) ? data.waitlistUrl : FALLBACK_WAITLIST;
-
-      statusEl.textContent = statusText;
-
+      // botón
+      const btn = document.getElementById("ctaBtn");
+      btn.textContent = data.ctaText || "Reservar";
       btn.disabled = false;
-      btn.textContent = ctaText;
 
+      // destino según cupos
       btn.onclick = function(){
-        var url = open ? calendarUrl : waitlistUrl;
-        window.open(url, "_blank");
+        const url = data.open ? data.calendarUrl : data.waitlistUrl;
+        if (url) window.open(url, "_blank");
       };
     }
 
     function loadStatus(){
-      // elimina script anterior
+      // mensaje mientras carga
+      document.getElementById("statusText").textContent = "Cargando disponibilidad…";
+
+      // borra script anterior
       var old = document.getElementById("jsonpScript");
       if (old && old.parentNode) old.parentNode.removeChild(old);
 
-      // carga JSONP
+      // crea JSONP
       var s = document.createElement("script");
       s.id = "jsonpScript";
-      s.src = ENDPOINT + "&_=" + new Date().getTime();
-      s.async = true;
+      s.src = ENDPOINT + "?callback=applyStatus&_=" + Date.now();
 
+      // si falla cargar el script
       s.onerror = function(){
         document.getElementById("statusText").textContent = "No se pudo cargar disponibilidad.";
-        var btn = document.getElementById("ctaBtn");
-        btn.disabled = false;
-        btn.textContent = "Reintentar";
-        btn.onclick = loadStatus;
       };
 
       document.body.appendChild(s);
     }
 
-    // auto-carga al abrir la página
-    loadStatus();
+    // Carga al abrir
+    window.addEventListener("load", loadStatus);
   </script>
 </body>
 </html>
