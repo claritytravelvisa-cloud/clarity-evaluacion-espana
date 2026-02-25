@@ -1,112 +1,30 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Evaluación Técnica España</title>
+<script>
+  const ENDPOINT = "https://script.google.com/macros/s/AKfycbxixfTnK1KBYUVLr_rPL98E5SFQ03VhcjJsBqH2hasaQ_datYyzq7VQannvY1qDZVdl/exec";
+  const BOOKING_URL = "https://calendar.app.google/wKLMMgWJkpnymVLY9";
 
-  <style>
-    body{
-      font-family: Arial, sans-serif;
-      background:#0A1F44;
-      color:white;
-      margin:0;
-      padding:0;
-      text-align:center;
-    }
-    .container{
-      padding:60px 20px;
-      max-width:800px;
-      margin:auto;
-    }
-    h1{
-      font-size:38px;
-      margin-bottom:20px;
-    }
-    p{
-      font-size:18px;
-      line-height:1.6;
-      margin-bottom:30px;
-    }
-    .button{
-      background:#C7A86D;
-      color:#0A1F44;
-      padding:15px 30px;
-      text-decoration:none;
-      font-weight:bold;
-      border-radius:8px;
-      display:inline-block;
-      cursor:pointer;
-    }
-    .button:hover{ opacity:0.9; }
-    .footer{
-      margin-top:60px;
-      font-size:14px;
-      opacity:0.7;
-    }
-    .status{
-      margin-top:18px;
-      font-size:16px;
-      opacity:0.9;
-    }
-  </style>
-</head>
+  const btn = document.getElementById("ctaBtn");
+  const statusEl = document.getElementById("statusText");
 
-<body>
-  <div class="container">
-    <h1>Evaluación Técnica de Expediente</h1>
+  async function loadStatus(){
+    try{
+      const res = await fetch(ENDPOINT);
+      const data = await res.json();
 
-    <p>
-      Regularización en España<br>
-      Análisis profesional de tu caso migratorio por €89.
-    </p>
+      statusEl.textContent = data.statusText;
 
-    <a id="ctaBtn" class="button" href="#" target="_blank" rel="noopener">
-      Cargando...
-    </a>
-
-    <div id="statusText" class="status"></div>
-
-    <div class="footer">
-      Clarity Travel &amp; Visa ©️ 2026
-    </div>
-  </div>
-
-  <script>
-    // PEGA AQUÍ TU WEB APP URL (la que en incógnito te devuelve JSON)
-    const ENDPOINT = "PEGA_AQUI_TU_URL_DEL_WEB_APP";
-
-    // Tu link normal de reservar (Google Calendar booking)
-    const BOOKING_URL = "PEGA_AQUI_TU_LINK_DE_AGENDAR";
-
-    const btn = document.getElementById("ctaBtn");
-    const statusEl = document.getElementById("statusText");
-
-    async function loadStatus(){
-      try{
-        const res = await fetch(ENDPOINT, { method: "GET" });
-
-        // Si Apps Script devolvió HTML o error, aquí falla
-        const data = await res.json();
-
-        statusEl.textContent = data.statusText || "";
-
-        if (data.open) {
-          btn.textContent = data.ctaText || "Reservar";
-          btn.href = BOOKING_URL;
-        } else {
-          btn.textContent = data.ctaText || "Lista de espera";
-          btn.href = data.waitlistUrl || "#";
-        }
-      } catch (e){
-        statusEl.textContent = "Error al cargar disponibilidad";
-        btn.textContent = "Intentar nuevamente";
-        btn.href = "#";
-        btn.onclick = (ev) => { ev.preventDefault(); loadStatus(); };
+      if (data.open) {
+        btn.textContent = data.ctaText;
+        btn.href = BOOKING_URL;
+      } else {
+        btn.textContent = data.ctaText;
+        btn.href = data.waitlistUrl;
       }
+    } catch (e){
+      statusEl.textContent = "Error al cargar disponibilidad";
+      btn.textContent = "Intentar nuevamente";
+      btn.href = "#";
     }
+  }
 
-    loadStatus();
-  </script>
-</body>
-</html>
+  loadStatus();
+</script>
