@@ -78,47 +78,35 @@
 
   <!-- ✅ SCRIPT (JSONP) -->
   <script>
-    const ENDPOINT = "https://script.google.com/macros/s/AKfycbydBLCNSfthkb0dq8oFx1FtIZd5uzVCmn3qIJTl15gc7jIGNmxA6LyCpPajMoX_HQty/exec";
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbydBLCNSfthkb0dq8oFx1FtIZd5uzVCmn3qIJTl15gc7jIGNmxA6LyCpPajMoX_HQty/exec";
 
-    function applyStatus(data){
-      // texto
-      document.getElementById("statusText").textContent = data.statusText || "";
+function applyStatus(data){
+  document.getElementById("statusText").textContent = data.statusText || "";
+  const btn = document.getElementById("ctaBtn");
+  btn.textContent = data.ctaText || "Reservar";
+  btn.disabled = false;
+  btn.onclick = function(){
+    const url = data.open ? data.calendarUrl : data.waitlistUrl;
+    if (url) window.open(url, "_blank");
+  };
+}
 
-      // botón
-      const btn = document.getElementById("ctaBtn");
-      btn.textContent = data.ctaText || "Reservar";
-      btn.disabled = false;
+function loadStatus(){
+  document.getElementById("statusText").textContent = "Cargando disponibilidad…";
 
-      // destino según cupos
-      btn.onclick = function(){
-        const url = data.open ? data.calendarUrl : data.waitlistUrl;
-        if (url) window.open(url, "_blank");
-      };
-    }
+  var old = document.getElementById("jsonpScript");
+  if (old && old.parentNode) old.parentNode.removeChild(old);
 
-    function loadStatus(){
-      // mensaje mientras carga
-      document.getElementById("statusText").textContent = "Cargando disponibilidad…";
+  var s = document.createElement("script");
+  s.id = "jsonpScript";
+  s.src = ENDPOINT + "?callback=applyStatus&_=" + Date.now();
 
-      // borra script anterior
-      var old = document.getElementById("jsonpScript");
-      if (old && old.parentNode) old.parentNode.removeChild(old);
+  s.onerror = function(){
+    document.getElementById("statusText").textContent = "No se pudo cargar disponibilidad.";
+  };
 
-      // crea JSONP
-      var s = document.createElement("script");
-      s.id = "jsonpScript";
-      s.src = ENDPOINT + "?callback=applyStatus&_=" + Date.now();
+  document.body.appendChild(s);
+}
 
-      // si falla cargar el script
-      s.onerror = function(){
-        document.getElementById("statusText").textContent = "No se pudo cargar disponibilidad.";
-      };
-
-      document.body.appendChild(s);
-    }
-
-    // Carga al abrir
-    window.addEventListener("load", loadStatus);
-  </script>
-</body>
-</html>
+window.addEventListener("load", loadStatus);
+</script>
