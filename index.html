@@ -4,52 +4,58 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Evaluación Técnica España</title>
+
 <style>
-  {"open":true,"ctaText":"Reservar","statusText":"Cupos disponibles","cuposMax":35,"cuposOcupados":0,"waitlistUrl":"https://docs.google.com/forms/d/e/1FAIpQLScCFtPDUncoHINpTFGuSnVwbdugP0QrEKG6D5PdgYEaNAzC5g/viewform?usp=publish-editor"}
 body{
-font-family: Arial, sans-serif;
-background:#0A1F44;
-color:white;
-margin:0;
-padding:0;
-text-align:center;
+  font-family: Arial, sans-serif;
+  background:#0A1F44;
+  color:white;
+  margin:0;
+  padding:0;
+  text-align:center;
 }
 
 .container{
-padding:60px 20px;
-max-width:800px;
-margin:auto;
+  padding:60px 20px;
+  max-width:800px;
+  margin:auto;
 }
 
 h1{
-font-size:38px;
-margin-bottom:20px;
+  font-size:38px;
+  margin-bottom:20px;
 }
 
 p{
-font-size:18px;
-line-height:1.6;
-margin-bottom:30px;
+  font-size:18px;
+  line-height:1.6;
+  margin-bottom:30px;
+}
+
+.status{
+  font-size:16px;
+  margin-bottom:20px;
+  font-weight:bold;
 }
 
 .button{
-background:#C7A86D;
-color:#0A1F44;
-padding:15px 30px;
-text-decoration:none;
-font-weight:bold;
-border-radius:8px;
-display:inline-block;
+  background:#C7A86D;
+  color:#0A1F44;
+  padding:15px 30px;
+  text-decoration:none;
+  font-weight:bold;
+  border-radius:8px;
+  display:inline-block;
 }
 
 .button:hover{
-opacity:0.9;
+  opacity:0.9;
 }
 
 .footer{
-margin-top:60px;
-font-size:14px;
-opacity:0.7;
+  margin-top:60px;
+  font-size:14px;
+  opacity:0.7;
 }
 </style>
 </head>
@@ -65,8 +71,10 @@ Regularización en España<br>
 Análisis profesional de tu caso migratorio por €89.
 </p>
 
-<a href="#" class="button">
-Solicitar Evaluación
+<div id="statusTxt" class="status">Cargando estado...</div>
+
+<a href="#" id="ctaBtn" class="button">
+Cargando...
 </a>
 
 <div class="footer">
@@ -74,6 +82,35 @@ Clarity Travel & Visa ©️ 2026
 </div>
 
 </div>
+
+<script>
+(async () => {
+
+  const ENDPOINT = "PEGA_AQUI_TU_URL_DEL_WEB_APP";
+
+  const btn = document.getElementById("ctaBtn");
+  const status = document.getElementById("statusTxt");
+
+  try {
+    const res = await fetch(ENDPOINT);
+    const data = await res.json();
+
+    status.textContent = data.statusText;
+    btn.textContent = data.ctaText;
+
+    if (data.open) {
+      btn.href = "#reservar"; 
+    } else {
+      btn.href = data.waitlistUrl;
+    }
+
+  } catch (error) {
+    status.textContent = "Error al cargar disponibilidad";
+    btn.textContent = "Intentar nuevamente";
+  }
+
+})();
+</script>
 
 </body>
 </html>
