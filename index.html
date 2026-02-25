@@ -1,71 +1,120 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Evaluación Técnica España</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Evaluación Técnica España</title>
 
-<style>
-  body{font-family:Arial,sans-serif;background:#0A1F44;color:#fff;margin:0;text-align:center}
-  .container{padding:60px 20px;max-width:800px;margin:auto}
-  h1{font-size:38px;margin:0 0 20px}
-  p{font-size:18px;line-height:1.6;margin:0 0 30px}
-  .button{background:#C7A86D;color:#0A1F44;padding:15px 30px;text-decoration:none;font-weight:700;border-radius:8px;display:inline-block}
-  .status{margin-top:18px;font-size:14px;opacity:.85}
-  .footer{margin-top:60px;font-size:14px;opacity:.7}
-</style>
+  <style>
+    body{
+      font-family: Arial, sans-serif;
+      background:#0A1F44;
+      color:white;
+      margin:0;
+      padding:0;
+      text-align:center;
+    }
+
+    .container{
+      padding:60px 20px;
+      max-width:800px;
+      margin:auto;
+    }
+
+    h1{
+      font-size:38px;
+      margin-bottom:20px;
+    }
+
+    p{
+      font-size:18px;
+      line-height:1.6;
+      margin-bottom:20px;
+    }
+
+    .status{
+      font-size:14px;
+      opacity:0.85;
+      margin-bottom:25px;
+    }
+
+    .button{
+      background:#C7A86D;
+      color:#0A1F44;
+      padding:15px 30px;
+      text-decoration:none;
+      font-weight:bold;
+      border-radius:8px;
+      display:inline-block;
+      cursor:pointer;
+    }
+
+    .button:hover{ opacity:0.9; }
+
+    .footer{
+      margin-top:60px;
+      font-size:14px;
+      opacity:0.7;
+    }
+  </style>
 </head>
 
 <body>
-<div class="container">
-  <h1>Evaluación Técnica de Expediente</h1>
-  <p>Regularización en España<br>Análisis profesional de tu caso migratorio por €89.</p>
+  <div class="container">
+    <h1>Evaluación Técnica de Expediente</h1>
 
-  <a id="ctaBtn" class="button" href="#" target="_blank" rel="noopener">Cargando...</a>
-  <div id="statusText" class="status"></div>
+    <p>
+      Regularización en España<br>
+      Análisis profesional de tu caso migratorio por €89.
+    </p>
 
-  <div class="footer">Clarity Travel & Visa ©️ 2026</div>
-</div>
+    <div id="statusText" class="status">Verificando disponibilidad…</div>
 
-<script>
-  const ENDPOINT = "https://script.google.com/macros/s/AKfycbxixfTnK1KBYUVLr_rPL98E5SFQ03VhcjJsBqH2hasaQ_datYyzq7VQannvY1qDZVdl/exec";
-  const CALENDAR_URL = "https://calendar.app.google/wKLMMgWJkpnymVLY9";
-  const WAITLIST_FALLBACK = "https://docs.google.com/forms/d/e/1FAIpQLScCFtPDUncoHINpTFGuSnVwbdugP0QrEKG6D5PdgYEaNAzC5g/viewform?usp=header";
+    <a id="ctaBtn" class="button" href="#" target="_blank" rel="noopener">
+      Cargando…
+    </a>
 
-  const btn = document.getElementById("ctaBtn");
-  const statusText = document.getElementById("statusText");
+    <div class="footer">
+      Clarity Travel & Visa ©️ 2026
+    </div>
+  </div>
 
-  // JSONP callback (sin CORS)
-  function handleLandingStatus(data){
-    const open = (data.open === true || data.open === "true");
+  <script>
+    // === TUS LINKS (YA PUESTOS) ===
+    const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbxixfTnK1KBYUVLr_rPL98E5SFQ03VhcjJsBqH2hasaQ_datYyzq7VQannvY1qDZVdl/exec";
+    const CALENDAR_URL  = "https://calendar.app.google/wKLMMgWJkpnymVLY9";
 
-    if(open){
-      btn.textContent = data.ctaText || "Reservar";
-      btn.href = CALENDAR_URL;
-      statusText.textContent = data.statusText || "Cupos disponibles";
-    } else {
-      btn.textContent = data.ctaText || "Lista de espera";
-      btn.href = (data.waitlistUrl && String(data.waitlistUrl).includes("docs.google.com/forms"))
-        ? data.waitlistUrl
-        : WAITLIST_FALLBACK;
-      statusText.textContent = data.statusText || "Cupos llenos";
+    // JSONP callback (Apps Script devuelve: handleLandingStatus({...}))
+    function handleLandingStatus(data){
+      const statusEl = document.getElementById("statusText");
+      const btn = document.getElementById("ctaBtn");
+
+      const open = !!data.open;
+      const ctaText = data.ctaText || (open ? "Reservar" : "Lista de espera");
+      const statusText = data.statusText || (open ? "Cupos disponibles" : "Cupos llenos");
+      const waitlistUrl = data.waitlistUrl || "#";
+
+      statusEl.textContent = statusText;
+
+      btn.textContent = ctaText;
+
+      // Si open=true -> calendario. Si open=false -> formulario lista de espera.
+      btn.href = open ? CALENDAR_URL : waitlistUrl;
     }
-  }
-  window.handleLandingStatus = handleLandingStatus;
 
-  // Si por alguna razón no responde, dejamos lista de espera como fallback
-  const timer = setTimeout(() => {
-    btn.textContent = "Lista de espera";
-    btn.href = WAITLIST_FALLBACK;
-    statusText.textContent = "No se pudo verificar disponibilidad.";
-  }, 2500);
-
-  // Cargar JSON como script (JSONP)
-  const s = document.createElement("script");
-  s.src = ENDPOINT + "?callback=handleLandingStatus&t=" + Date.now();
-  s.onload = () => clearTimeout(timer);
-  s.onerror = () => clearTimeout(timer);
-  document.body.appendChild(s);
-</script>
+    // Carga JSONP para evitar CORS
+    (function loadStatus(){
+      const s = document.createElement("script");
+      s.src = ENDPOINT_URL + "?callback=handleLandingStatus&_=" + Date.now();
+      s.onerror = function(){
+        // Fallback si algo falla: manda a calendario
+        document.getElementById("statusText").textContent = "No se pudo verificar disponibilidad.";
+        const btn = document.getElementById("ctaBtn");
+        btn.textContent = "Reservar";
+        btn.href = CALENDAR_URL;
+      };
+      document.body.appendChild(s);
+    })();
+  </script>
 </body>
 </html>
