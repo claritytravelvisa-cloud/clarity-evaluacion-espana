@@ -1,76 +1,88 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Evaluación Técnica de Expediente</title>
-  <style>
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#0a1f44;color:#fff}
-    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px}
-    .card{max-width:820px;text-align:center}
-    h1{font-size:48px;margin:0 0 8px}
-    h2{font-weight:500;margin:0 0 6px;opacity:.9}
-    p{margin:10px 0;opacity:.9}
-    .btn{display:inline-block;padding:14px 22px;border-radius:10px;border:0;background:#c7a86d;color:#0a1f44;
-         font-weight:700;cursor:pointer}
-    .btn[disabled]{opacity:.6;cursor:not-allowed}
-    footer{margin-top:28px;opacity:.8}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evaluación Técnica España</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#0A1F44;
+  color:white;
+  text-align:center;
+}
+.container{
+  padding:60px 20px;
+  max-width:800px;
+  margin:auto;
+}
+h1{font-size:40px;margin-bottom:10px;}
+p{font-size:18px;margin-bottom:20px;}
+.button{
+  background:#C7A86D;
+  color:#0A1F44;
+  padding:15px 30px;
+  border:none;
+  border-radius:8px;
+  font-weight:bold;
+  cursor:pointer;
+}
+.button[disabled]{opacity:.6;cursor:not-allowed;}
+.footer{margin-top:40px;font-size:14px;opacity:.7;}
+</style>
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="card">
-      <h1>Evaluación Técnica de Expediente</h1>
-      <h2>Regularización en España</h2>
-      <p>Análisis profesional de tu caso migratorio por €89.</p>
 
-      <p id="statusText">Cargando disponibilidad…</p>
+<div class="container">
+<h1>Evaluación Técnica de Expediente</h1>
+<p>Regularización en España<br>Análisis profesional por €89.</p>
 
-      <button id="ctaBtn" class="btn" type="button" disabled>…</button>
+<p id="statusText">Cargando disponibilidad...</p>
 
-      <footer>Clarity Travel &amp; Visa ©️ 2026</footer>
-    </div>
-  </div>
+<button id="ctaBtn" class="button" disabled>...</button>
 
-  <script>
-    // 👇 Pega aquí TU /exec público (deploy con "Anyone")
-    const ENDPOINT = "https://script.google.com/macros/s/AKfycbwqXltdt_yhXhtu6U1pZB3CH7PnF0elqnqeYZxamhTI34kGTrACCR7bPVWIaz2exzRr/exec";
+<div class="footer">Clarity Travel & Visa ©️ 2026</div>
+</div>
 
-    function applyStatus(data){
-      const statusEl = document.getElementById("statusText");
-      const btn = document.getElementById("ctaBtn");
+<script>
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbyH6dfNJBCHXD2lV1Og0K1Bs4eljy-N7bC2cDIvbBEvM2gkxG_gVVxeh_B0uSGNDlkP/exec";
 
-      statusEl.textContent = data.statusText || "";
+function applyStatus(data){
+  const statusEl = document.getElementById("statusText");
+  const btn = document.getElementById("ctaBtn");
 
-      btn.textContent = data.ctaText || "Reservar";
-      btn.disabled = false;
+  statusEl.textContent = data.statusText || "";
+  btn.textContent = data.ctaText || "Reservar";
+  btn.disabled = false;
 
-      btn.onclick = function(){
-        const url = data.open ? data.calendarUrl : data.waitlistUrl;
-        if (url) window.open(url, "_blank");
-      };
-    }
+  btn.onclick = function(){
+    const url = data.open ? data.calendarUrl : data.waitlistUrl;
+    if (url) window.open(url, "_blank");
+  };
+}
 
-    function loadStatus(){
-      document.getElementById("statusText").textContent = "Cargando disponibilidad…";
+function loadStatus(){
+  document.getElementById("statusText").textContent = "Cargando disponibilidad...";
 
-      var old = document.getElementById("jsonpScript");
-      if (old && old.parentNode) old.parentNode.removeChild(old);
+  var old = document.getElementById("jsonpScript");
+  if (old && old.parentNode) old.parentNode.removeChild(old);
 
-      var s = document.createElement("script");
-      s.id = "jsonpScript";
-      s.src = ENDPOINT + "?callback=applyStatus&_=" + Date.now();
+  var s = document.createElement("script");
+  s.id = "jsonpScript";
+  s.src = ENDPOINT + "?callback=applyStatus&_=" + Date.now();
 
-      s.onerror = function(){
-        document.getElementById("statusText").textContent = "No se pudo cargar disponibilidad.";
-        document.getElementById("ctaBtn").disabled = true;
-      };
+  s.onerror = function(){
+    document.getElementById("statusText").textContent = "No se pudo cargar disponibilidad.";
+  };
 
-      document.body.appendChild(s);
-    }
+  document.body.appendChild(s);
+}
 
-    window.addEventListener("load", loadStatus);
-  </script>
+window.addEventListener("load", loadStatus);
+</script>
+
 </body>
 </html>
