@@ -1,110 +1,126 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Evaluación Técnica España</title>
-  <style>
-    body{
-      font-family: Arial, sans-serif;
-      background:#0A1F44;
-      color:white;
-      margin:0;
-      padding:0;
-      text-align:center;
-    }
-    .container{
-      padding:60px 20px;
-      max-width:800px;
-      margin:auto;
-    }
-    h1{
-      font-size:38px;
-      margin-bottom:20px;
-    }
-    p{
-      font-size:18px;
-      line-height:1.6;
-      margin-bottom:30px;
-    }
-    .button{
-      background:#C7A86D;
-      color:#0A1F44;
-      padding:15px 30px;
-      text-decoration:none;
-      font-weight:bold;
-      border-radius:8px;
-      display:inline-block;
-    }
-    .button:hover{ opacity:0.9; }
-    .footer{
-      margin-top:60px;
-      font-size:14px;
-      opacity:0.7;
-    }
-    .status{
-      margin-top:18px;
-      font-size:14px;
-      opacity:0.85;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evaluación Técnica España</title>
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  background:#0A1F44;
+  color:white;
+  margin:0;
+  padding:0;
+  text-align:center;
+}
+
+.container{
+  padding:60px 20px;
+  max-width:800px;
+  margin:auto;
+}
+
+h1{
+  font-size:38px;
+  margin-bottom:20px;
+}
+
+p{
+  font-size:18px;
+  line-height:1.6;
+  margin-bottom:30px;
+}
+
+.button{
+  background:#C7A86D;
+  color:#0A1F44;
+  padding:15px 30px;
+  text-decoration:none;
+  font-weight:bold;
+  border-radius:8px;
+  display:inline-block;
+}
+
+.button:hover{
+  opacity:0.9;
+}
+
+.status{
+  margin-top:20px;
+  font-size:14px;
+  opacity:0.85;
+}
+
+.footer{
+  margin-top:60px;
+  font-size:14px;
+  opacity:0.7;
+}
+</style>
 </head>
 
 <body>
-  <div class="container">
-    <h1>Evaluación Técnica de Expediente</h1>
 
-    <p>
-      Regularización en España<br>
-      Análisis profesional de tu caso migratorio por €89.
-    </p>
+<div class="container">
 
-    <a id="ctaBtn" href="https://calendar.app.google/wKLMMgWJkpnymVLY9" class="button" target="_blank" rel="noopener">
-      Solicitar Evaluación
-    </a>
+<h1>Evaluación Técnica de Expediente</h1>
 
-    <div id="statusText" class="status">Cargando disponibilidad...</div>
+<p>
+Regularización en España<br>
+Análisis profesional de tu caso migratorio por €89.
+</p>
 
-    <div class="footer">
-      Clarity Travel &amp; Visa ©️ 2026
-    </div>
-  </div>
+<a id="ctaBtn" href="#" class="button">Cargando...</a>
 
-  <script>
-    const ENDPOINT = "https://script.google.com/macros/s/AKfycbxixfTnK1KBYUVLr_rPL98E5SFQ03VhcjJsBqH2hasaQ_datYyzq7VQannvY1qDZVdl/exec";
-    const BOOKING_URL = "https://calendar.app.google/wKLMMgWJkpnymVLY9";
+<div id="statusText" class="status"></div>
 
-    const btn = document.getElementById("ctaBtn");
-    const statusEl = document.getElementById("statusText");
+<div class="footer">
+Clarity Travel & Visa ©️ 2026
+</div>
 
-    async function loadStatus(){
-      try{
-        const res = await fetch(ENDPOINT, { cache: "no-store" });
-        const data = await res.json();
+</div>
 
-        // Si no vienen campos, no rompemos la página
-        const open = !!data.open;
-        const ctaText = data.ctaText || (open ? "Reservar" : "Lista de espera");
-        const statusText = data.statusText || (open ? "Cupos disponibles" : "Cupos llenos");
+<script>
 
-        statusEl.textContent = statusText;
-        btn.textContent = ctaText;
+// 🔵 TU ENDPOINT (Apps Script)
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbxixfTnK1KBYUVLr_rPL98E5SFQ03VhcjJsBqH2hasaQ_datYyzq7VQannvY1qDZVdl/exec";
 
-        // Si está abierto: Calendar. Si está cerrado: lista de espera.
-        if (open) {
-          btn.href = BOOKING_URL;
-        } else {
-          btn.href = data.waitlistUrl || BOOKING_URL;
-        }
-      } catch (e){
-        // Si el endpoint falla, igual la web se ve y el botón funciona
-        statusEl.textContent = "No se pudo cargar cupos. Puedes reservar aquí:";
-        btn.textContent = "Reservar (manual)";
-        btn.href = BOOKING_URL;
-      }
+// 🔵 TU CALENDARIO
+const CALENDAR_URL = "https://calendar.app.google/wKLMMgWJkpnymVLY9";
+
+// 🔵 TU FORMULARIO LISTA DE ESPERA
+const WAITLIST_URL = "https://docs.google.com/forms/d/e/1FAIpQLScCFtPDUncoHINpTFGuSnVwbdugP0QrEKG6D5PdgYEaNAzC5g/viewform";
+
+const btn = document.getElementById("ctaBtn");
+const statusText = document.getElementById("statusText");
+
+async function loadAvailability(){
+  try{
+    const response = await fetch(ENDPOINT + "?t=" + new Date().getTime());
+    const data = await response.json();
+
+    if(data.open === true){
+      btn.textContent = "Reservar";
+      btn.href = CALENDAR_URL;
+      statusText.textContent = "Cupos disponibles";
+    } else {
+      btn.textContent = "Lista de espera";
+      btn.href = WAITLIST_URL;
+      statusText.textContent = "Cupos llenos";
     }
 
-    loadStatus();
-  </script>
+  } catch(error){
+    // Si falla la conexión con Apps Script
+    btn.textContent = "Reservar";
+    btn.href = CALENDAR_URL;
+    statusText.textContent = "No se pudo verificar disponibilidad.";
+  }
+}
+
+loadAvailability();
+
+</script>
+
 </body>
 </html>
