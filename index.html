@@ -1,67 +1,153 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Evaluación Técnica de Expediente</title>
-  <style>
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#071b3a;color:#fff;display:flex;min-height:100vh;align-items:center;justify-content:center;padding:24px}
-    .card{max-width:720px;width:100%;text-align:center}
-    h1{font-size:44px;line-height:1.05;margin:0 0 10px}
-    .sub{opacity:.9;margin:0 0 18px;font-size:18px}
-    .status{margin:18px 0 18px;font-weight:600}
-    .btn{display:inline-block;background:#c7a86d;color:#111;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:700}
-    .muted{opacity:.75;margin-top:14px}
-    .footer{opacity:.75;margin-top:26px}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evaluación Técnica de Expediente</title>
+
+<style>
+body{
+margin:0;
+font-family: Arial, sans-serif;
+background:#0A1F44;
+color:white;
+display:flex;
+align-items:center;
+justify-content:center;
+min-height:100vh;
+text-align:center;
+padding:20px;
+}
+
+.container{
+max-width:800px;
+width:100%;
+}
+
+h1{
+font-size:42px;
+margin-bottom:20px;
+}
+
+p{
+font-size:18px;
+line-height:1.6;
+margin-bottom:25px;
+}
+
+.status{
+margin-bottom:25px;
+font-weight:bold;
+font-size:18px;
+}
+
+.button{
+background:#C7A86D;
+color:#0A1F44;
+padding:15px 30px;
+text-decoration:none;
+font-weight:bold;
+border-radius:8px;
+display:inline-block;
+cursor:pointer;
+border:none;
+font-size:16px;
+}
+
+.button:hover{
+opacity:0.9;
+}
+
+.footer{
+margin-top:50px;
+font-size:14px;
+opacity:0.7;
+}
+</style>
 </head>
+
 <body>
-  <div class="card">
-    <h1>Evaluación Técnica de Expediente</h1>
-    <p class="sub">Regularización en España<br/>Análisis profesional de tu caso migratorio por €89.</p>
 
-    <div id="statusText" class="status">Cargando disponibilidad...</div>
+<div class="container">
 
-    <a id="ctaBtn" class="btn" href="#" target="_blank" rel="noopener">Cargando…</a>
+<h1>Evaluación Técnica de Expediente</h1>
 
-    <div class="footer">Clarity Travel & Visa ©️ 2026</div>
-  </div>
+<p>
+Regularización en España<br>
+Análisis profesional de tu caso migratorio por €89.
+</p>
+
+<div id="statusText" class="status">
+Cargando disponibilidad...
+</div>
+
+<button id="ctaBtn" class="button" disabled>
+Cargando...
+</button>
+
+<div class="footer">
+Clarity Travel & Visa ©️ 2026
+</div>
+
+</div>
 
 <script>
-  // ✅ Pega aquí tu /exec NUEVA (la copiada del Deploy)
-  const EXEC_URL = "https://script.google.com/macros/s/AKfycbyIn8uSGE1Ghr3As5zEhGxDkjvWILo_mFOk0dveXSZsI6ObUPFiDYgY9IPomvl09Dil/exec";
 
-  function handleLandingStatus(data){
-    const statusEl = document.getElementById("statusText");
-    const btn = document.getElementById("ctaBtn");
+// ✅ TU ENDPOINT REAL
+const EXEC_URL = "https://script.google.com/macros/s/AKfycbx9QoPUGpaumgvH-ssHA8mnDsu6hCYte-k67Nl41Vz7l8qi8dXYlvpUECwJyw-Pocs3/exec";
 
-    if(!data){
-      statusEl.textContent = "No se pudo cargar disponibilidad.";
-      btn.textContent = "Reintentar";
-      btn.href = location.href;
-      return;
+// JSONP Loader (evita CORS)
+function loadStatus(){
+  const old = document.getElementById("jsonpScript");
+  if(old) old.remove();
+
+  const s = document.createElement("script");
+  s.id = "jsonpScript";
+  s.src = EXEC_URL + "?callback=handleLandingStatus&t=" + Date.now();
+  s.onerror = function(){
+    showError("No se pudo cargar disponibilidad.");
+  };
+  document.body.appendChild(s);
+}
+
+function handleLandingStatus(data){
+  const statusEl = document.getElementById("statusText");
+  const btn = document.getElementById("ctaBtn");
+
+  if(!data || typeof data.open === "undefined"){
+    showError("Respuesta inválida del servidor.");
+    return;
+  }
+
+  statusEl.textContent = data.statusText;
+
+  const open = !!data.open;
+  const targetUrl = open ? data.calendarUrl : data.waitlistUrl;
+
+  btn.disabled = false;
+  btn.textContent = data.ctaText;
+
+  btn.onclick = function(){
+    if(targetUrl){
+      window.open(targetUrl, "_blank");
     }
+  };
+}
 
-    statusEl.textContent = data.statusText || "Estado no disponible";
+function showError(msg){
+  const statusEl = document.getElementById("statusText");
+  const btn = document.getElementById("ctaBtn");
 
-    const open = !!data.open;
-    btn.textContent = data.ctaText || (open ? "Reservar" : "Lista de espera");
+  statusEl.textContent = msg;
+  btn.disabled = false;
+  btn.textContent = "Reintentar";
+  btn.onclick = loadStatus;
+}
 
-    const url = open ? data.calendarUrl : data.waitlistUrl;
-    btn.href = url || "#";
-  }
+// Cargar al iniciar
+window.addEventListener("load", loadStatus);
 
-  function loadStatus(){
-    // JSONP para evitar CORS: inyecta <script src="...&callback=handleLandingStatus">
-    const s = document.createElement("script");
-    s.src = EXEC_URL + "?callback=handleLandingStatus&_=" + Date.now();
-    s.onerror = function(){
-      handleLandingStatus(null);
-    };
-    document.body.appendChild(s);
-  }
-
-  loadStatus();
 </script>
+
 </body>
 </html>
