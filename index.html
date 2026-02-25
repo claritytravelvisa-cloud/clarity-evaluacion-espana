@@ -1,131 +1,164 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Evaluación Técnica España</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Evaluación Técnica de Expediente</title>
 
   <style>
-    body{
-      font-family: Arial, sans-serif;
-      background:#0A1F44;
-      color:white;
-      margin:0;
-      padding:0;
-      text-align:center;
+    :root{
+      --bg:#071a3a;
+      --card:rgba(255,255,255,.06);
+      --text:#ffffff;
+      --muted:rgba(255,255,255,.75);
+      --gold:#c7a86d;
+      --gold2:#b89456;
     }
-    .container{
-      padding:60px 20px;
-      max-width:800px;
-      margin:auto;
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 700px at 30% 20%, rgba(255,255,255,.06), transparent 60%),
+                  radial-gradient(900px 600px at 80% 10%, rgba(199,168,109,.08), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+    .wrap{
+      width:min(920px, 100%);
+      text-align:center;
+      padding:34px 22px;
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 18px;
+      box-shadow: 0 18px 60px rgba(0,0,0,.35);
     }
     h1{
-      font-size:38px;
-      margin-bottom:20px;
+      margin:0 0 10px 0;
+      font-size: clamp(28px, 3.6vw, 44px);
+      letter-spacing:.2px;
     }
-    p{
-      font-size:18px;
-      line-height:1.6;
-      margin-bottom:30px;
+    .sub{
+      margin:0;
+      font-size: clamp(16px, 2.1vw, 20px);
+      color:var(--muted);
     }
     .status{
-      margin: 10px 0 20px;
-      font-weight: bold;
-      opacity: .95;
+      margin:22px auto 10px auto;
+      padding:12px 14px;
+      width: min(520px, 100%);
+      border-radius: 12px;
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,.08);
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.35;
     }
-    .button{
-      background:#C7A86D;
-      color:#0A1F44;
-      padding:15px 30px;
-      text-decoration:none;
-      font-weight:bold;
-      border-radius:8px;
-      display:inline-block;
-      cursor:pointer;
-      border:none;
-      font-size:16px;
-    }
-    .button:hover{ opacity:0.9; }
-    .button:disabled{
-      opacity:.6;
-      cursor:not-allowed;
-    }
-    .footer{
-      margin-top:60px;
-      font-size:14px;
-      opacity:0.7;
-    }
-    .small{
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
       margin-top:14px;
-      font-size:14px;
-      opacity:.75;
+      padding:14px 22px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: linear-gradient(180deg, var(--gold), var(--gold2));
+      color:#1a1a1a;
+      font-weight: 700;
+      text-decoration:none;
+      cursor:pointer;
+      min-width: 190px;
+      box-shadow: 0 12px 28px rgba(0,0,0,.25);
     }
+    .btn:active{ transform: translateY(1px); }
+    .small{
+      margin-top: 22px;
+      font-size: 13px;
+      color: rgba(255,255,255,.6);
+    }
+    .hidden{ display:none !important; }
   </style>
 </head>
 
 <body>
-  <div class="container">
+  <div class="wrap">
     <h1>Evaluación Técnica de Expediente</h1>
+    <p class="sub">Regularización en España · Análisis profesional de tu caso migratorio por €89.</p>
 
-    <p>
-      Regularización en España<br>
-      Análisis profesional de tu caso migratorio por €89.
-    </p>
-
-    <div id="statusText" class="status">Cargando disponibilidad…</div>
-
-    <button id="ctaBtn" class="button" disabled>
-      Cargando…
-    </button>
-
-    <div id="helperText" class="small"></div>
-
-    <div class="footer">
-      Clarity Travel & Visa ©️ 2026
+    <div id="statusBox" class="status">
+      Cargando disponibilidad…
     </div>
+
+    <a id="ctaBtn" class="btn hidden" href="#" target="_blank" rel="noopener">
+      Reservar
+    </a>
+
+    <div class="small">Clarity Travel &amp; Visa ©️ 2026</div>
   </div>
 
   <script>
-    const STATUS_ENDPOINT = "https://script.google.com/macros/s/AKfycbydBLCNSfthkb0dq8oFx1FtIZd5uzVCmn3qIJTl15gc7jIGNmxA6LyCpPajMoX_HQty/exec";
+    // ✅ Pega aquí tu URL /exec (la del Apps Script publicado)
+    const ENDPOINT = "TU_URL_EXEC_AQUI";
 
-    function applyStatus(data){
-      const statusEl = document.getElementById("statusText");
+    // --- Render UI con la data del endpoint ---
+    function handleLandingStatus(data){
+      const statusBox = document.getElementById("statusBox");
       const btn = document.getElementById("ctaBtn");
-      const helper = document.getElementById("helperText");
 
-      const open = !!data.open;
+      // Validación mínima
+      if(!data || typeof data.open !== "boolean"){
+        statusBox.textContent = "No se pudo cargar disponibilidad.";
+        btn.classList.remove("hidden");
+        btn.textContent = "Reintentar";
+        btn.href = window.location.href;
+        return;
+      }
 
-      statusEl.textContent = data.statusText;
-      btn.textContent = data.ctaText;
+      // Texto de status
+      const cupos = (typeof data.cuposOcupados === "number" && typeof data.cuposMax === "number")
+        ? ` (${data.cuposOcupados}/${data.cuposMax})`
+        : "";
 
-      const targetUrl = open ? data.calendarUrl : data.waitlistUrl;
+      statusBox.textContent = (data.statusText || "Estado") + cupos;
 
-      btn.disabled = !targetUrl;
+      // Acción del botón según open
+      const url = data.open ? data.calendarUrl : data.waitlistUrl;
 
-      helper.textContent = open
-        ? "Al reservar, se abrirá el calendario para elegir tu horario."
-        : "Cupos llenos. Únete a la lista de espera y te contactamos cuando haya cupo.";
+      btn.classList.remove("hidden");
+      btn.textContent = data.ctaText || (data.open ? "Reservar" : "Lista de espera");
 
-      btn.onclick = () => {
-        if (!targetUrl) return;
-        window.location.href = targetUrl;
-      };
+      if(url && typeof url === "string" && url.startsWith("http")){
+        btn.href = url;
+      } else {
+        // Si no viene url, mostramos reintento
+        btn.textContent = "Reintentar";
+        btn.href = window.location.href;
+      }
     }
 
-    async function loadStatus(){
-      try{
-        const res = await fetch(STATUS_ENDPOINT, { cache: "no-store" });
-        if(!res.ok) throw new Error("HTTP " + res.status);
-        const data = await res.json();
-        applyStatus(data);
-      }catch(err){
-        document.getElementById("statusText").textContent = "No se pudo cargar disponibilidad.";
+    // --- JSONP loader (sin CORS) ---
+    function loadStatus(){
+      // Limpia script anterior si existe
+      const old = document.getElementById("jsonpScript");
+      if(old) old.remove();
+
+      const s = document.createElement("script");
+      s.id = "jsonpScript";
+      s.src = ENDPOINT + (ENDPOINT.includes("?") ? "&" : "?") + "callback=handleLandingStatus";
+
+      s.onerror = () => {
+        const statusBox = document.getElementById("statusBox");
         const btn = document.getElementById("ctaBtn");
-        btn.disabled = false;
+        statusBox.textContent = "No se pudo cargar disponibilidad.";
+        btn.classList.remove("hidden");
         btn.textContent = "Reintentar";
-        btn.onclick = loadStatus;
-        console.error(err);
-      }
+        btn.href = window.location.href;
+      };
+
+      document.body.appendChild(s);
     }
 
     loadStatus();
