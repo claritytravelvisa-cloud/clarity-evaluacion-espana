@@ -28,11 +28,10 @@
       line-height:1.6;
       margin-bottom:30px;
     }
-    #statusText{
-      margin: 20px 0 12px;
-      font-size: 18px;
-      font-weight: 600;
-      opacity: 0.95;
+    .status{
+      margin: 10px 0 20px;
+      font-weight: bold;
+      opacity: .95;
     }
     .button{
       background:#C7A86D;
@@ -43,12 +42,23 @@
       border-radius:8px;
       display:inline-block;
       cursor:pointer;
+      border:none;
+      font-size:16px;
     }
     .button:hover{ opacity:0.9; }
+    .button:disabled{
+      opacity:.6;
+      cursor:not-allowed;
+    }
     .footer{
       margin-top:60px;
       font-size:14px;
       opacity:0.7;
+    }
+    .small{
+      margin-top:14px;
+      font-size:14px;
+      opacity:.75;
     }
   </style>
 </head>
@@ -62,55 +72,63 @@
       Análisis profesional de tu caso migratorio por €89.
     </p>
 
-    <div id="statusText">Verificando disponibilidad…</div>
+    <div id="statusText" class="status">Cargando disponibilidad…</div>
 
-    <a id="ctaBtn" class="button" href="#" target="_blank" rel="noopener">
+    <button id="ctaBtn" class="button" disabled>
       Cargando…
-    </a>
+    </button>
+
+    <div id="helperText" class="small"></div>
 
     <div class="footer">
-      Clarity Travel &amp; Visa ©️ 2026
+      Clarity Travel & Visa ©️ 2026
     </div>
   </div>
 
   <script>
-    // === LINKS FIJOS ===
-    const CALENDAR_URL = "https://calendar.app.google/wKLMMgWJkpnymVLY9";
-    const WAITLIST_FALLBACK_URL = "https://docs.google.com/forms/d/e/1FAIpQLScCFtPDUncoHINpTFGuSnVwbdugP0QrEKG6D5PdgYEaNAzC5g/viewform?usp=header";
+    const STATUS_ENDPOINT = "https://script.google.com/macros/s/AKfycbydBLCNSfthkb0dq8oFx1FtIZd5uzVCmn3qIJTl15gc7jIGNmxA6LyCpPajMoX_HQty/exec";
 
-    // === API (Apps Script doGet) ===
-    const API_URL = "https://script.google.com/macros/s/AKfycbxixfTnK1KBYUVLr_rPL98E5SFQ03VhcjJsBqH2hasaQ_datYyzq7VQannvY1qDZVdl/exec";
-
-    function applyLandingStatus(data){
+    function applyStatus(data){
       const statusEl = document.getElementById("statusText");
       const btn = document.getElementById("ctaBtn");
+      const helper = document.getElementById("helperText");
 
-      // seguridad por si algo viniera raro
-      const open = !!(data && data.open);
-      const ctaText = (data && data.ctaText) ? data.ctaText : (open ? "Reservar" : "Lista de espera");
-      const statusText = (data && data.statusText) ? data.statusText : (open ? "Cupos disponibles" : "Cupos llenos");
-      const waitlistUrl = (data && data.waitlistUrl) ? data.waitlistUrl : WAITLIST_FALLBACK_URL;
+      const open = !!data.open;
 
-      statusEl.textContent = statusText;
-      btn.textContent = ctaText;
+      statusEl.textContent = data.statusText;
+      btn.textContent = data.ctaText;
 
-      // lógica principal
-      btn.href = open ? CALENDAR_URL : waitlistUrl;
+      const targetUrl = open ? data.calendarUrl : data.waitlistUrl;
+
+      btn.disabled = !targetUrl;
+
+      helper.textContent = open
+        ? "Al reservar, se abrirá el calendario para elegir tu horario."
+        : "Cupos llenos. Únete a la lista de espera y te contactamos cuando haya cupo.";
+
+      btn.onclick = () => {
+        if (!targetUrl) return;
+        window.location.href = targetUrl;
+      };
     }
 
-    async function loadLandingStatus(){
+    async function loadStatus(){
       try{
-        const res = await fetch(API_URL, { cache: "no-store" });
+        const res = await fetch(STATUS_ENDPOINT, { cache: "no-store" });
+        if(!res.ok) throw new Error("HTTP " + res.status);
         const data = await res.json();
-        applyLandingStatus(data);
+        applyStatus(data);
       }catch(err){
-        console.error("No pude cargar el status:", err);
-        // fallback seguro: si falla, mandamos a calendario (puedes cambiarlo a formulario si prefieres)
-        applyLandingStatus({ open:true, ctaText:"Reservar", statusText:"Reservar (manual)", waitlistUrl: WAITLIST_FALLBACK_URL });
+        document.getElementById("statusText").textContent = "No se pudo cargar disponibilidad.";
+        const btn = document.getElementById("ctaBtn");
+        btn.disabled = false;
+        btn.textContent = "Reintentar";
+        btn.onclick = loadStatus;
+        console.error(err);
       }
     }
 
-    loadLandingStatus();
+    loadStatus();
   </script>
 </body>
 </html>
