@@ -120,23 +120,25 @@ function handleLandingStatus(data){
 }
 
 /* Carga el endpoint como <script> (evita CORS) */
+<script>
 function loadStatus(){
-  const old = document.getElementById("jsonpScript");
-  if(old) old.remove();
+  // borra script anterior sin usar .remove()
+  var old = document.getElementById("jsonpScript");
+  if (old && old.parentNode) old.parentNode.removeChild(old);
 
-  const s = document.createElement("script");
+  // crea el <script> JSONP
+  var s = document.createElement("script");
   s.id = "jsonpScript";
-  s.src = ENDPOINT + "&_=" + Date.now();
+  s.src = ENDPOINT + "&_=" + new Date().getTime();
+  s.async = true;
+
   s.onerror = function(){
     document.getElementById("statusText").textContent = "No se pudo cargar disponibilidad.";
+    var btn = document.getElementById("ctaBtn");
+    btn.textContent = "Reintentar";
+    btn.onclick = loadStatus;
   };
+
   document.body.appendChild(s);
 }
-
-/* Ejecutar al cargar la página */
-window.onload = loadStatus;
 </script>
-
-</body>
-</html>
-</html>
