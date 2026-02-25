@@ -14,30 +14,26 @@
       padding:0;
       text-align:center;
     }
-
     .container{
       padding:60px 20px;
       max-width:800px;
       margin:auto;
     }
-
     h1{
       font-size:38px;
       margin-bottom:20px;
     }
-
     p{
       font-size:18px;
       line-height:1.6;
-      margin-bottom:20px;
+      margin-bottom:30px;
     }
-
-    .status{
-      font-size:14px;
-      opacity:0.85;
-      margin-bottom:25px;
+    #statusText{
+      margin: 20px 0 12px;
+      font-size: 18px;
+      font-weight: 600;
+      opacity: 0.95;
     }
-
     .button{
       background:#C7A86D;
       color:#0A1F44;
@@ -48,9 +44,7 @@
       display:inline-block;
       cursor:pointer;
     }
-
     .button:hover{ opacity:0.9; }
-
     .footer{
       margin-top:60px;
       font-size:14px;
@@ -68,53 +62,55 @@
       Análisis profesional de tu caso migratorio por €89.
     </p>
 
-    <div id="statusText" class="status">Verificando disponibilidad…</div>
+    <div id="statusText">Verificando disponibilidad…</div>
 
     <a id="ctaBtn" class="button" href="#" target="_blank" rel="noopener">
       Cargando…
     </a>
 
     <div class="footer">
-      Clarity Travel & Visa ©️ 2026
+      Clarity Travel &amp; Visa ©️ 2026
     </div>
   </div>
 
   <script>
-    // === TUS LINKS (YA PUESTOS) ===
-    const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbxixfTnK1KBYUVLr_rPL98E5SFQ03VhcjJsBqH2hasaQ_datYyzq7VQannvY1qDZVdl/exec";
-    const CALENDAR_URL  = "https://calendar.app.google/wKLMMgWJkpnymVLY9";
+    // === LINKS FIJOS ===
+    const CALENDAR_URL = "https://calendar.app.google/wKLMMgWJkpnymVLY9";
+    const WAITLIST_FALLBACK_URL = "https://docs.google.com/forms/d/e/1FAIpQLScCFtPDUncoHINpTFGuSnVwbdugP0QrEKG6D5PdgYEaNAzC5g/viewform?usp=header";
 
-    // JSONP callback (Apps Script devuelve: handleLandingStatus({...}))
-    function handleLandingStatus(data){
+    // === API (Apps Script doGet) ===
+    const API_URL = "https://script.google.com/macros/s/AKfycbxixfTnK1KBYUVLr_rPL98E5SFQ03VhcjJsBqH2hasaQ_datYyzq7VQannvY1qDZVdl/exec";
+
+    function applyLandingStatus(data){
       const statusEl = document.getElementById("statusText");
       const btn = document.getElementById("ctaBtn");
 
-      const open = !!data.open;
-      const ctaText = data.ctaText || (open ? "Reservar" : "Lista de espera");
-      const statusText = data.statusText || (open ? "Cupos disponibles" : "Cupos llenos");
-      const waitlistUrl = data.waitlistUrl || "#";
+      // seguridad por si algo viniera raro
+      const open = !!(data && data.open);
+      const ctaText = (data && data.ctaText) ? data.ctaText : (open ? "Reservar" : "Lista de espera");
+      const statusText = (data && data.statusText) ? data.statusText : (open ? "Cupos disponibles" : "Cupos llenos");
+      const waitlistUrl = (data && data.waitlistUrl) ? data.waitlistUrl : WAITLIST_FALLBACK_URL;
 
       statusEl.textContent = statusText;
-
       btn.textContent = ctaText;
 
-      // Si open=true -> calendario. Si open=false -> formulario lista de espera.
+      // lógica principal
       btn.href = open ? CALENDAR_URL : waitlistUrl;
     }
 
-    // Carga JSONP para evitar CORS
-    (function loadStatus(){
-      const s = document.createElement("script");
-      s.src = ENDPOINT_URL + "?callback=handleLandingStatus&_=" + Date.now();
-      s.onerror = function(){
-        // Fallback si algo falla: manda a calendario
-        document.getElementById("statusText").textContent = "No se pudo verificar disponibilidad.";
-        const btn = document.getElementById("ctaBtn");
-        btn.textContent = "Reservar";
-        btn.href = CALENDAR_URL;
-      };
-      document.body.appendChild(s);
-    })();
+    async function loadLandingStatus(){
+      try{
+        const res = await fetch(API_URL, { cache: "no-store" });
+        const data = await res.json();
+        applyLandingStatus(data);
+      }catch(err){
+        console.error("No pude cargar el status:", err);
+        // fallback seguro: si falla, mandamos a calendario (puedes cambiarlo a formulario si prefieres)
+        applyLandingStatus({ open:true, ctaText:"Reservar", statusText:"Reservar (manual)", waitlistUrl: WAITLIST_FALLBACK_URL });
+      }
+    }
+
+    loadLandingStatus();
   </script>
 </body>
 </html>
