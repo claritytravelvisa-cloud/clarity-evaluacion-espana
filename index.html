@@ -65,48 +65,35 @@
   </div>
 
   <script>
-    // ✅ Pega aquí tu URL final del Worker, EJ:
-    // const STATUS_URL = "https://tight-thunder-a0dc.claritytravelvisa.workers.dev/status";
-    const STATUS_URL = "lingering-star-d1cc.claritytravelvisa.workers.dev";
+    <script>
+  const ENDPOINT = "TU_LINK_DE_CLOUDFLARE_AQUI"; // <- pega aquí el workers.dev (el que ya abre y muestra JSON)
 
-    function applyStatus(data){
-      const statusEl = document.getElementById("statusText");
-      const btn = document.getElementById("ctaBtn");
+  async function loadCupos() {
+    const res = await fetch(ENDPOINT, { cache: "no-store" });
+    const data = await res.json();
 
-      statusEl.textContent = data.statusText || "";
+    const statusEl = document.getElementById("statusText");
+    const btn = document.getElementById("ctaBtn");
 
+    const max = Number(data.cuposMax || 0);
+    const ocupados = Number(data.cuposOcupados || 0);
+    const open = Boolean(data.open);
+    const cuposDisponibles = open && ocupados < max;
+
+    statusEl.textContent = cuposDisponibles ? (data.statusText || "Cupos disponibles") : "Cupos llenos";
+
+    if (cuposDisponibles) {
       btn.textContent = data.ctaText || "Reservar";
-      btn.disabled = false;
-
-      btn.onclick = function(){
-        const url = data.open ? data.calendarUrl : data.waitlistUrl;
-        if (url) window.open(url, "_blank");
-      };
+      btn.href = data.calendarUrl || "#";
+      btn.style.pointerEvents = "auto";
+      btn.style.opacity = "1";
+    } else {
+      btn.textContent = "Lista de espera";
+      btn.href = data.waitlistUrl || "#";
+      btn.style.pointerEvents = btn.href === "#" ? "none" : "auto";
+      btn.style.opacity = btn.href === "#" ? "0.6" : "1";
     }
+  }
 
-    async function loadStatus(){
-      const statusEl = document.getElementById("statusText");
-      const btn = document.getElementById("ctaBtn");
-
-      statusEl.textContent = "Cargando disponibilidad…";
-      btn.disabled = true;
-      btn.textContent = "...";
-
-      try{
-        const res = await fetch(STATUS_URL + "?_=" + Date.now(), { cache: "no-store" });
-        if (!res.ok) throw new Error("HTTP " + res.status);
-
-        const data = await res.json();
-        applyStatus(data);
-      } catch(e){
-        statusEl.textContent = "No se pudo cargar disponibilidad.";
-        btn.disabled = false;
-        btn.textContent = "Reintentar";
-        btn.onclick = loadStatus;
-      }
-    }
-
-    window.addEventListener("load", loadStatus);
-  </script>
-</body>
-</html>
+  loadCupos();
+</script>
