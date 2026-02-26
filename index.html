@@ -36,6 +36,7 @@
       opacity:.95;
     }
     .button{
+      display:inline-block;
       margin-top:14px;
       background:#c7a86d;
       color:#061a3a;
@@ -45,8 +46,13 @@
       font-size:16px;
       font-weight:700;
       cursor:pointer;
+      text-decoration:none;
     }
-    .button[disabled]{opacity:.65; cursor:not-allowed;}
+    .button.disabled{
+      opacity:.65;
+      cursor:not-allowed;
+      pointer-events:none;
+    }
     footer{margin-top:24px; opacity:.85; font-size:14px;}
   </style>
 </head>
@@ -59,13 +65,14 @@
 
     <p id="statusText">Cargando disponibilidad…</p>
 
-    <button id="ctaBtn" class="button" type="button" disabled>...</button>
+    <a id="ctaBtn" class="button disabled" href="#" target="_blank" rel="noopener">...</a>
 
     <footer>Clarity Travel &amp; Visa ©️ 2026</footer>
   </div>
 
   <script>
-    const ENDPOINT = "https://lingering-star-d1cc.claritytravelvisa.workers.dev";
+    // ESTE es tu Worker (el que ya te muestra el JSON)
+    const ENDPOINT = "https://lingering-star-d1cc.claritytravelvisa.workers.dev/";
 
     async function loadCupos() {
       const statusEl = document.getElementById("statusText");
@@ -73,13 +80,12 @@
 
       try {
         const res = await fetch(ENDPOINT, { cache: "no-store" });
-
         if (!res.ok) throw new Error("HTTP " + res.status);
 
         const data = await res.json();
 
-        const max = Number(data.cuposMax ?? 0);
-        const ocupados = Number(data.cuposOcupados ?? 0);
+        const max = Number(data.cuposMax || 0);
+        const ocupados = Number(data.cuposOcupados || 0);
         const open = Boolean(data.open);
         const cuposDisponibles = open && ocupados < max;
 
@@ -87,29 +93,27 @@
           ? (data.statusText || "Cupos disponibles")
           : "Cupos llenos";
 
-        btn.disabled = false;
-
         if (cuposDisponibles) {
           btn.textContent = data.ctaText || "Reservar";
-          btn.onclick = () => window.location.href = (data.calendarUrl || "#");
+          btn.href = data.calendarUrl || "#";
+          btn.classList.remove("disabled");
         } else {
           btn.textContent = "Lista de espera";
-          const url = data.waitlistUrl || "";
-          btn.onclick = () => url ? window.location.href = url : null;
-          if (!url) btn.disabled = true;
+          btn.href = data.waitlistUrl || "#";
+          if (btn.href === "#" || !data.waitlistUrl) btn.classList.add("disabled");
+          else btn.classList.remove("disabled");
         }
-
       } catch (err) {
-        statusEl.textContent = "No se pudo cargar disponibilidad.";
+        statusEl.textContent = "Error cargando cupos (revisa el endpoint).";
         btn.textContent = "Reintentar";
-        btn.disabled = false;
-        btn.onclick = () => loadCupos();
+        btn.href = "#";
+        btn.classList.remove("disabled");
+        btn.onclick = (e) => { e.preventDefault(); loadCupos(); };
         console.error(err);
       }
     }
 
     loadCupos();
   </script>
-
 </body>
 </html>
