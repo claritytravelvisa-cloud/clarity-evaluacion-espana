@@ -1,119 +1,85 @@
 <!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Evaluación Técnica de Expediente</title>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clarity Travel & Visa · Clarity Business SV</title><meta name="description" content="Asesorías de visa: DS-160, perfil, boleta, cita, coaching de entrevista, desde $65.">
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+<style>
+:root{--navy:#0b1b3b;--gold:#c9a857;--cream:#f7f4ee;--rose:#edd7d1;--slate:#2e405e;}
+*{box-sizing:border-box} html,body{margin:0;padding:0;background:var(--cream);color:var(--slate);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,'Helvetica Neue','Arial',sans-serif}
+.container{max-width:1100px;margin:0 auto;padding:0 18px} .section{padding:56px 0} .section.alt{background:linear-gradient(180deg,var(--cream),#ffffff)}
+.topbar{background:var(--navy);color:#fff} .nav{display:flex;align-items:center;justify-content:space-between;padding:10px 0}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:#fff} .brand img{height:36px} .brand span{font-weight:800;letter-spacing:.4px}
+.menu{display:flex;gap:18px;flex-wrap:wrap} .menu a{color:#fff;text-decoration:none;opacity:.95;padding:8px 10px;border-radius:10px} .menu a:hover{background:rgba(255,255,255,.08)}
+.cta-top{display:flex;gap:10px;align-items:center} .badge{background:var(--gold);color:var(--navy);padding:6px 10px;border-radius:999px;font-weight:700;font-size:13px}
+.hero{display:grid;gap:22px;align-items:center;padding:36px 0} .hero h1{font-size:clamp(28px,4vw,44px);line-height:1.15;margin:0;color:var(--navy)} .hero p.lead{font-size:clamp(16px,2.2vw,20px);margin:0}
+.hero-card{background:#fff;border-radius:20px;box-shadow:0 12px 30px rgba(11,27,59,.12);padding:22px} .hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px} .card{background:#fff;border-radius:18px;box-shadow:0 10px 24px rgba(11,27,59,.10);padding:18px;border:1px solid #f0f0f0}
+.card h3{margin:6px 0 8px;color:var(--navy)} .btn{display:inline-block;text-decoration:none;padding:12px 16px;border-radius:14px;border:2px solid var(--navy);font-weight:800}
+.btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)} .btn.ghost{background:transparent;color:var(--navy)} .btn.gold{background:var(--gold);color:var(--navy);border-color:var(--gold)} .btn.block{display:block;text-align:center;width:100%}
+.btn:hover{transform:translateY(-1px)} .feature{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:center}
+.feature img, .feature svg{width:100%;height:auto;border-radius:16px;box-shadow:0 10px 22px rgba(11,27,59,.12)} @media (max-width:900px){.feature{grid-template-columns:1fr}}
+.footer{background:#0a1531;color:#c8d1e6;margin-top:40px} .footer a{color:#fff;text-decoration:none;opacity:.9} .footer .col{flex:1;min-width:220px} .footer .row{display:flex;gap:24px;flex-wrap:wrap} .footer small{display:block;opacity:.8;margin-top:12px}
+.note{background:var(--rose);padding:10px 14px;border-radius:12px;border:1px solid #f0e5e1} .tag{display:inline-block;background:#eef3ff;color:var(--navy);padding:6px 10px;border-radius:999px;font-size:12px;margin-right:8px;margin-bottom:8px}
+.table{width:100%;border-collapse:collapse;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 8px 18px rgba(11,27,59,.08)} .table th,.table td{padding:14px;border-bottom:1px solid #f2f2f2;text-align:left} .table th{background:#f9fafc;color:var(--navy)} .table tr:last-child td{border-bottom:none}
+.center{text-align:center} .mt8{margin-top:8px} .mt16{margin-top:16px} .mt24{margin-top:24px} .mt32{margin-top:32px} .m0{margin:0}
 
-  <style>
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background:#061a3a;
-      color:#fff;
-      height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      text-align:center;
-      padding:32px 16px;
-    }
-    .wrap{max-width:980px; width:100%;}
-    h1{
-      font-size:clamp(34px, 5vw, 60px);
-      margin:0 0 10px;
-      font-weight:800;
-    }
-    h2{
-      margin:0;
-      font-size:clamp(18px, 2.4vw, 28px);
-      font-weight:600;
-      opacity:.95;
-    }
-    p{
-      margin:10px 0 6px;
-      font-size:16px;
-      opacity:.95;
-    }
-    .button{
-      display:inline-block;
-      margin-top:14px;
-      background:#c7a86d;
-      color:#061a3a;
-      border:none;
-      border-radius:10px;
-      padding:16px 28px;
-      font-size:16px;
-      font-weight:700;
-      cursor:pointer;
-      text-decoration:none;
-    }
-    .button.disabled{
-      opacity:.65;
-      cursor:not-allowed;
-      pointer-events:none;
-    }
-    footer{margin-top:24px; opacity:.85; font-size:14px;}
-  </style>
-</head>
-
+/* v6.1: imágenes horizontales con etiqueta degradada */
+.thumb{position:relative;display:flex;justify-content:center;align-items:center;margin:0 auto;border-radius:14px;overflow:hidden;box-shadow:0 8px 20px rgba(11,27,59,.12)}
+.thumb img{display:block;width:100%;height:auto}
+.thumb-260{max-width:260px}
+.thumb-320{max-width:320px}
+.thumb .label{position:absolute;left:10px;bottom:10px;padding:6px 10px;border-radius:999px;color:#fff;font-weight:800;font-size:12px;border:1px solid var(--gold);
+background:linear-gradient(90deg,var(--gold),var(--navy),var(--rose));opacity:.95}
+.thumb:hover .label{opacity:1}
+.thumb:hover{filter:brightness(1.03)}
+</style></head>
 <body>
-  <div class="wrap">
-    <h1>Evaluación Técnica de Expediente</h1>
-    <h2>Regularización en España</h2>
-    <p>Análisis profesional de tu caso migratorio por €89.</p>
-
-    <p id="statusText">Cargando disponibilidad…</p>
-
-    <a id="ctaBtn" class="button disabled" href="#" target="_blank" rel="noopener">...</a>
-
-    <footer>Clarity Travel &amp; Visa ©️ 2026</footer>
+<header class="topbar">
+  <div class="container nav">
+    <a class="brand" href="index.html" aria-label="Clarity Business SV"><img src="assets/img/logo.svg" alt="Clarity Business SV logo"><span>Clarity Business SV</span></a>
+    <nav class="menu" aria-label="Principal">
+      <a href="index.html">Inicio</a><a href="about.html">Quiénes somos</a><a href="travel.html">Clarity Travel &amp; Visa</a><a href="raices.html">Raíces Claras Inmobiliaria</a><a href="academy.html">Clarity Business Academy</a><a href="estacion.html">Estación de Vida</a>
+    </nav>
+    <div class="cta-top"><span class="badge">WhatsApp 7645-0105</span></div>
   </div>
+</header>
+<main class="container">
+  <section class="section">
+    <h1 class="m0">Clarity Travel &amp; Visa</h1>
+    <p class="lead mt8">“No necesitas suerte. Necesitas preparación.”</p>
+    <div class="note mt16">No vendemos visas ni garantizamos aprobaciones. No somos abogados. Te preparamos y asesoramos según tu perfil.</div>
+  </section>
 
-  <script>
-    // ESTE es tu Worker (el que ya te muestra el JSON)
-    const ENDPOINT = "https://lingering-star-d1cc.claritytravelvisa.workers.dev/";
+  <section class="section alt">
+    <h2 class="m0">Paquete Clarity · qué incluye</h2>
+    <table class="table mt16">
+      <tr><th>Servicio</th><th>Detalle</th></tr>
+      <tr><td>DS-160 + Perfil</td><td>Validación de datos y consistencia</td></tr>
+      <tr><td>Boleta + Cita</td><td>Paso a paso, sin errores</td></tr>
+      <tr><td>Coaching Entrevista</td><td>Preguntas frecuentes, speech y checklist</td></tr>
+      <tr><td>Seguimiento</td><td>Recordatorios, mejoras si re-aplicas</td></tr>
+    </table>
+  </section>
 
-    async function loadCupos() {
-      const statusEl = document.getElementById("statusText");
-      const btn = document.getElementById("ctaBtn");
-
-      try {
-        const res = await fetch(ENDPOINT, { cache: "no-store" });
-        if (!res.ok) throw new Error("HTTP " + res.status);
-
-        const data = await res.json();
-
-        const max = Number(data.cuposMax || 0);
-        const ocupados = Number(data.cuposOcupados || 0);
-        const open = Boolean(data.open);
-        const cuposDisponibles = open && ocupados < max;
-
-        statusEl.textContent = cuposDisponibles
-          ? (data.statusText || "Cupos disponibles")
-          : "Cupos llenos";
-
-        if (cuposDisponibles) {
-          btn.textContent = data.ctaText || "Reservar";
-          btn.href = data.calendarUrl || "#";
-          btn.classList.remove("disabled");
-        } else {
-          btn.textContent = "Lista de espera";
-          btn.href = data.waitlistUrl || "#";
-          if (btn.href === "#" || !data.waitlistUrl) btn.classList.add("disabled");
-          else btn.classList.remove("disabled");
-        }
-      } catch (err) {
-        statusEl.textContent = "Error cargando cupos (revisa el endpoint).";
-        btn.textContent = "Reintentar";
-        btn.href = "#";
-        btn.classList.remove("disabled");
-        btn.onclick = (e) => { e.preventDefault(); loadCupos(); };
-        console.error(err);
-      }
-    }
-
-    loadCupos();
-  </script>
-</body>
-</html>
+  <section class="section">
+    <h2 class="m0">Paquetes y precios</h2>
+    <p class="mt8">Elige el nivel de acompañamiento que mejor se adapte a tu proceso.</p>
+    <div class="grid mt16">
+      <div class="card"><div class="thumb thumb-260"><img src="assets/img/asesoria_basica.png" alt="Asesoría Básica"><span class="label">Asesoría Básica</span></div><h3>Asesoría Básica</h3><p>Sesión de orientación general de <strong>30 minutos</strong>. <em>No incluye llenado, boleta ni cita.</em></p><p class="mt8"><strong>$65</strong></p></div>
+      <div class="card"><div class="thumb thumb-260"><img src="assets/img/paquete_gold.png" alt="Paquete Gold USA/Europa"><span class="label">Paquete Gold</span></div><h3>Paquete Gold USA / Europa</h3><p>DS-160, perfil, boleta, cita, coaching consular y checklist personalizado.</p><p class="mt8"><strong>$350</strong></p></div>
+      <div class="card"><div class="thumb thumb-260"><img src="assets/img/paquete_premium.png" alt="Paquete Premium USA/Europa"><span class="label">Paquete Premium</span></div><h3>Paquete Premium USA / Europa</h3><p>Todo lo del Gold + <strong>acompañamiento total</strong> y simulación personalizada.</p><p class="mt8"><strong>$420</strong></p></div>
+      <div class="card"><div class="thumb thumb-260"><img src="assets/img/paquete_mexico.jpeg" alt="Paquete México"><span class="label">Paquete México</span></div><h3>Paquete México</h3><p>Asesoría completa para visa mexicana: DS-160, perfil, boleta y orientación previa a entrevista.</p><p class="mt8"><strong>$250</strong></p></div>
+    </div>
+    <div class="hero-actions mt24"><a class="btn gold" href="https://wa.link" target="_blank" rel="noopener">Paquete Mundialista · Reserva por WhatsApp</a><a class="btn ghost" href="https://wa.me" target="_blank" rel="noopener">Consultar dudas</a></div>
+  </section>
+</main>
+<footer class="footer">
+  <div class="container section">
+    <div class="row">
+      <div class="col"><h3 class="m0">Clarity Business SV</h3>
+        <small>San Salvador, El Salvador · <a href="mailto:info@visaexpressv.com">info@visaexpressv.com</a></small>
+        <small>Tel: 7645-0105 · 6044-4721</small></div>
+      <div class="col"><strong>Sub-marcas</strong><br>Clarity Travel &amp; Visa · Raíces Claras Inmobiliaria · Clarity Business Academy</div>
+    </div>
+  </div>
+</footer>
+</body></html>
